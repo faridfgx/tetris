@@ -600,7 +600,7 @@ function resizeCanvas() {
     
     if (isMobile) {
         // On mobile, use most of the screen height minus space for controls
-        const maxHeight = containerHeight - 200; // Space for controls and info
+        const maxHeight = containerHeight - 220; // Space for controls and info
         const maxWidth = containerWidth * 0.95; // 95% of screen width
         const aspectRatio = canvas.width / canvas.height;
         
