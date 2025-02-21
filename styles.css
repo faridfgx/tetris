@@ -1,12 +1,21 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     background: #222;
     margin: 0;
     font-family: 'Arial', sans-serif;
     color: white;
-    min-height: 100vh;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 }
 
 .game-container {
@@ -17,6 +26,10 @@ body {
     background: rgba(0, 0, 0, 0.8);
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+    max-width: 1200px;
+    margin: 20px;
 }
 
 .game-info {
@@ -29,18 +42,26 @@ body {
 .game-area {
     display: flex;
     flex-direction: column;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
     gap: 20px;
 }
 
 #tetris {
     border: 2px solid #fff;
     background: #000;
+    max-height: 80vh;
+    width: auto;
+    height: auto;
 }
 
 #next-piece-canvas {
     background: #000;
     border: 1px solid #fff;
     margin-top: 10px;
+    width: 80px;
+    height: 80px;
 }
 
 #score, #level, #lines {
@@ -54,7 +75,8 @@ body {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    margin-top: 20px;
+    max-width: 600px;
+    padding: 10px;
 }
 
 .left-controls {
@@ -123,26 +145,6 @@ body {
     background: rgba(255, 255, 255, 0.3);
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .game-container {
-        flex-direction: column;
-        padding: 10px;
-    }
-    
-    .game-info {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-    }
-
-    .mobile-controls {
-        flex-direction: row;
-        justify-content: space-between;
-    }
-}
-
 .hidden {
     display: none !important;
 }
@@ -157,6 +159,7 @@ body {
     border-radius: 10px;
     text-align: center;
     font-size: 24px;
+    z-index: 100;
 }
 
 #start-button, #restart-button {
@@ -175,25 +178,53 @@ body {
     background: #45a049;
 }
 
-@keyframes piece-flash {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
-}
-
-.flash {
-    animation: piece-flash 0.3s;
-}
-
 @media (max-width: 768px) {
     .game-container {
         flex-direction: column;
+        margin: 0;
         padding: 10px;
+        height: 100vh;
     }
     
     .game-info {
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
+        gap: 10px;
+    }
+
+    .game-area {
+        flex: 1;
+    }
+
+    #tetris {
+        max-height: 60vh;
+    }
+
+    .mobile-controls {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 0;
+    }
+}
+
+@media (max-height: 600px) {
+    .game-container {
+        padding: 5px;
+    }
+
+    #tetris {
+        max-height: 70vh;
+    }
+
+    .mobile-controls button {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+
+    .direction-pad {
+        width: 135px;
+        height: 135px;
     }
 }

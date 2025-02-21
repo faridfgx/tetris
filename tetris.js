@@ -596,6 +596,31 @@ document.addEventListener('touchend', () => {
     touchStartY = null;
 });
 
+
+// Add this function to handle canvas resizing
+function resizeCanvas() {
+    const maxHeight = window.innerHeight * 0.8;
+    const maxWidth = window.innerWidth * 0.4;
+    const aspectRatio = canvas.width / canvas.height;
+    
+    let newWidth = maxHeight * aspectRatio;
+    let newHeight = maxHeight;
+    
+    if (newWidth > maxWidth) {
+        newWidth = maxWidth;
+        newHeight = maxWidth / aspectRatio;
+    }
+    
+    canvas.style.width = `${newWidth}px`;
+    canvas.style.height = `${newHeight}px`;
+}
+
+// Add resize event listener
+window.addEventListener('resize', resizeCanvas);
+
+// Call once at start
+resizeCanvas();
+
 // Initialize button listeners
 document.getElementById('start-button').addEventListener('click', startGame);
 document.getElementById('restart-button').addEventListener('click', resetGame);
