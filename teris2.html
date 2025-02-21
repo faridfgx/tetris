@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Tetris</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="start-screen" class="fullscreen-overlay">
+        <h1>TETRIS</h1>
+        <button id="start-button" class="menu-button">Start Game</button>
+    </div>
+    
+    <div class="game-container">
+        <div class="game-info">
+            <div id="score">Score: 0</div>
+            <div id="level">Level: 1</div>
+            <div id="lines">Lines: 0</div>
+            <div id="next-piece">
+                <h3>Next Piece</h3>
+                <canvas id="next-piece-canvas" width="80" height="80"></canvas>
+            </div>
+            <div id="controls">
+                <h3>Controls</h3>
+                <p>← → : Move</p>
+                <p>↓ : Soft Drop</p>
+                <p>Space : Hard Drop</p>
+                <p>Q/W : Rotate</p>
+                <p>P : Pause</p>
+            </div>
+        </div>
+        <canvas id="tetris" width="300" height="600"></canvas>
+        <div id="mobile-controls" class="mobile-only">
+            <div class="control-row">
+                <button id="rotate-left">⟲</button>
+                <button id="move-left">←</button>
+                <button id="soft-drop">↓</button>
+                <button id="move-right">→</button>
+                <button id="rotate-right">⟳</button>
+            </div>
+            <div class="control-row">
+                <button id="hard-drop">⟱</button>
+                <button id="pause-button">⏸</button>
+            </div>
+        </div>
+        <div id="pause-screen" class="hidden">PAUSED</div>
+        <div id="game-over-screen" class="hidden">
+            <h2>GAME OVER</h2>
+            <p>Final Score: <span id="final-score">0</span></p>
+            <button id="restart-button">Play Again</button>
+        </div>
+    </div>
+    <script src="tetris.js"></script>
+</body>
+</html>
