@@ -1,5 +1,5 @@
 // Game constants
-const BLOCK_SIZE = 30;
+const BLOCK_SIZE = 25;
 const BOARD_WIDTH = 10;
 const BOARD_HEIGHT = 20;
 const COLORS = [
