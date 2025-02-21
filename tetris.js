@@ -15,17 +15,17 @@ const COLORS = [
 
 // Sound effects with fallback
 const AUDIO = {
-    lineClear: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fd4iXmIJtYGhzf4OQko+HeGxeY3GCjZSPgmxZVWJwf4qRlI+Lf3NkWmFuf4qUmpyakH+CgHhsZGl3iJaZlYh0aWpxeICLmJyTgGldYXGCipSYmpmQf3VoYmt5hpOYmpl6ZF1Qhu3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e0='),
-    move: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fd4iXmIJtYGhzf4OQko+HeGxeY3GCjZSPgmxZVWJwf4qRlI+Lf3NkWmFuf4qUmpyakH+CgHhsZGl3iJaZlYh0aWpxeICLmJyTgGldYXGCipSYmpmQf3VoYmt5hpOYmpl6ZF1oX1BQUF9pb3l/g4OBenNua2xxdHyBhoiIhYB5cGpmam91foaLjYyGfXNqZmZrdn+JjpCMhnhsZGRnaneDi5COhn1xaGZpb3qFjZKQiH50a2dqcnyHjpORin91bGhrcHqFjZGOhntwa2lucXqFjZCNhXhsZmhucHmDio6MhHx/hYqNjIZ5bWVkZ3B6hY2RjoZ8cWhlZ2x2gImOkIqEfHNta3B2gYqPkYyGfXRubXF3gYqPkY2HfnVvbnJ4gYqPkY2IfnZwcHR6goqPkY6JgHhycnZ8hIuPkY+LgXp0c3d+hYyQkY+LgXp0dHd+hYyQkY+LgHl0c3Z9hIuPkI6JfnZwb3N4gImOj4yGfHJraW10foeLj46JgHhycXV7g4uPkI6KgXp1dXh/ho2QkY+LgXp1dXh/ho2QkY+LgHl0c3Z9hIuPkI2IfXVvbnJ4gImOj4yGe3FqaGtzeICKjo6JgHhycXV7g4uPkI6KgXp1dXh/ho2QkY+LgXp1dXh/ho2QkY+LgHl0c3Z9hIuPkI2IfXVvbnJ4gImOj4yGe3FqaGtzeICKjo6JgHhycXV7g4uPkI6KgXt2dniAh46RkpCMgnt2dniAh46RkpCMgnt2dXd/ho2QkY+LgHhzcnV8g4uPkI2IfXRubXF3gImOj4yGe3BpZ2pxfIOMkI+KgXt2dniAh46RkpCMgnt2dniAh46RkpCMgnt2dXd/ho2QkY+LgHhzcnV8g4uPkI2IfXRubXF3gImOj4yGe3BpZ2pxfIOMkI+KgXhzcXV7g4uPkI6JgHl0c3Z9hIuPkI6JgHl0c3Z9hIuPkI6JgHlzcnV7g4qPkI2IfXRubXB2gImOj4yGe3BpZ2lycn2Gi4+OiYB4cnF1e4OLj5COiYB5dHN2fYSLj5COiYB5dHN2fYSLj5COiYB5c3J1e4OKj5CNiH10bm1wdoCJjo+MhntwaWdscn2Gi4+OiYB4cnF1e4OLj5COiYB4c3FzdnyEi4+Qj4uBeHNxc3Z8hIuPkI+LgXhzcXN2fISLj5CPi4F4c3J0d32Fi4+Qj4uBeXRzdnyEi4+Qj4uBenV1d3+GjZCRj4uBenV1eH+GjZCRj4uAeXRzdn2Ei4+QjYh9dW9ucniAiY6PjIZ7cWpoa3N4gIqOjomAeHJxdXuDi4+QjoqBenV1eH+GjZCRj4uBenV1eH+GjZCRj4uAeXRzdn2Ei4+QjYh9dW9ucniAiY6PjIZ7cWpoa3N4gIqOjomAeHJxdXuDi4+QjoqBe3Z2eICHjpGSkIyCe3Z2eICHjpGSkIyCe3Z1d3+GjZCRj4uAeHNydXyDi4+QjYh9dG5tcXeAiY6PjIZ7cGlnanF8g4yQj4qBe3Z2eICHjpGSkIyCe3Z2eICHjpGSkIyCe3Z1d3+GjZCRj4uAeHNydXyDi4+QjYh9dG5tcXeAiY6PjIZ7cGlnanF8g4yQj4qBeHNxdXuDi4+QjomAeXRzdn2Ei4+QjomAeXRzdn2Ei4+QjomAeXNydXuDio+QjYh9dG5tcHaAiY6PjIZ7cGlncnJ9houPjomAeHJxdXuDi4+QjomAeXRzdn2Ei4+QjomAeXRzdn2Ei4+QjomAeXNydXuDio+QjYh9dG5tcHaAiY6PjIZ7cGlncnJ9houPjomAeHJxdXuDi4+QjomA'),
-    rotate: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fd4iXmIJtYGhzf4OQko+HeGxeY3GCjZSPgmxZVWJwf4qRlI+Lf3NkWmFuf4qUmpyakH+CgHhsZGl3iJaZlYh0aWpxeICLmJyTgGldYXGCipSYmpmQf3VoYmt5hpOYmpnkwqiVho2QkY+LgXp1dXh/ho2QkY+LgHl0c3Z9hIuPkI2IfXVvbnJ4gImOj4yGe3FqaGtzeICKjo6JgHhycXV7g4uPkI6KgXp1dXh/ho2QkY+LgXp1dXh/ho2QkY+LgHl0c3Z9hIuPkI2IfXVvbnJ4gImOj4yGe3FqaGtzeICKjo6JgHhycXV7g4uPkI6KgXt2dniAh46RkpCMgnt2dniAh46RkpCMgnt2dXd/ho2QkY+LgHhzcnV8g4uPkI2IfXRubXF3gImOj4yGe3BpZ2pxfIOMkI+KgXt2dniAh46RkpCMgnt2dniAh46RkpCMgnt2dXd/ho2QkY+LgHhzcnV8g4uPkI2IfXRubXF3gImOj4yGe3BpZ2pxfIOMkI+KgXhzcXV7g4uPkI6JgHl0c3Z9hIuPkI6JgHl0c3Z9hIuPkI6JgHlzcnV7g4qPkI2IfXRubXB2gImOj4yGe3BpZ2lycn2Gi4+OiYB4cnF1e4OLj5COiYB5dHN2fYSLj5COiYB5dHN2fYSLj5COiYB5c3J1e4OKj5CNiH10bm1wdoCJjo+MhntwaWdscn2Gi4+OiYB4cnF1e4OLj5COiYB4c3FzdnyEi4+Qj4uBeHNxc3Z8hIuPkI+LgXhzcXN2fISLj5CPi4F4c3J0d32Fi4+Qj4uBeXRzdnyEi4+Qj4uBenV1d3+GjZCRj4uBenV1eH+GjZCRj4uAeXRzdn2Ei4+QjYh9dW9ucniAiY6PjIZ7cWpoa3N4gIqOjomAeHJxdXuDi4+QjoqBenV1eH+GjZCRj4uBenV1eH+GjZCRj4uAeXRzdn2Ei4+QjYh9dW9ucniAiY6PjIZ7cWpoa3N4gIqOjomAeHJxdXuDi4+QjoqBe3Z2eICHjpGSkIyCe3Z2eICHjpGSkIyCe3Z1d3+GjZCRj4uAeHNydXyDi4+QjYh9dG5tcXeAiY6PjIZ7cGlnanF8g4yQj4qBe3Z2eICHjpGSkIyCe3Z2eICHjpGSkIyCe3Z1d3+GjZCRj4uAeHNydXyDi4+QjYh9dG5tcXeAiY6PjIZ7cGlnanF8g4yQj4qBeHNxdXuDi4+QjomAeXRzdn2Ei4+QjomAeXRzdn2Ei4+QjomAeXNydXuDio+QjYh9dG5tcHaAiY6PjIZ7cGlncnJ9houPjomAeHJxdXuDi4+QjomAeXRzdn2Ei4+QjomAeXRzdn2Ei4+QjomAeXNydXuDio+QjYh9dG5tcHaAiY6PjIZ7cGlncnJ9houPjomAeHJxdXuDi4+QjomA')
+    lineClear: new Audio('data:audio/wav;base64,AAA'),
+    move: new Audio('data:audio/wav;base64,AAA'),
+    rotate: new Audio('data:audio/wav;base64,AAA')
 };
+
 // Audio manager to handle sound effects safely
 const AudioManager = {
     init() {
-        // Set volume for all sounds
         Object.values(AUDIO).forEach(audio => {
             if (audio) {
-                audio.volume = 0.3; // Reduce volume to 30%
+                audio.volume = 0.3;
             }
         });
     },
@@ -34,7 +34,6 @@ const AudioManager = {
         const audio = AUDIO[soundName];
         if (audio) {
             try {
-                // Create and play a new audio instance to allow overlapping sounds
                 const sound = audio.cloneNode();
                 sound.play().catch(e => {
                     console.warn(`Failed to play ${soundName} sound:`, e);
@@ -123,17 +122,14 @@ class LineAnimator {
 
     update() {
         this.animations = this.animations.filter(animation => {
-            // Update particles
             animation.particles.forEach(particle => {
                 particle.x += particle.vx;
                 particle.y += particle.vy;
                 particle.vy += 0.2; // gravity
             });
 
-            // Fade out
             animation.alpha -= 0.05;
             
-            // Draw white flash
             this.context.fillStyle = `rgba(255, 255, 255, ${animation.alpha})`;
             this.context.fillRect(
                 0,
@@ -142,7 +138,6 @@ class LineAnimator {
                 this.blockSize
             );
 
-            // Draw particles
             animation.particles.forEach(particle => {
                 this.context.fillStyle = particle.color;
                 this.context.globalAlpha = animation.alpha;
@@ -163,11 +158,12 @@ class LineAnimator {
 // Game state
 let isPaused = false;
 let isGameOver = false;
+let isGameStarted = false;
 let dropCounter = 0;
 let lastTime = 0;
 let level = 1;
 let lines = 0;
-let isGameStarted = false;
+
 // Canvas setup
 const canvas = document.getElementById('tetris');
 const context = canvas.getContext('2d');
@@ -187,96 +183,6 @@ const player = {
     nextPiece: null
 };
 
-// Add this function to handle game start
-function startGame() {
-    document.getElementById('start-screen').classList.add('hidden');
-    isGameStarted = true;
-    resetGame();
-    update();
-}
-// Modify the update function
-function update(time = 0) {
-    if (!isGameStarted) {
-        return;
-    }
-    
-    if (!isGameOver && !isPaused) {
-        const deltaTime = time - lastTime;
-        lastTime = time;
-        
-        dropCounter += deltaTime;
-        if (dropCounter > 1000 / level) {
-            playerDrop();
-        }
-        
-        draw();
-        lineAnimator.update();
-    }
-    requestAnimationFrame(update);
-}
-
-// Add mobile control handlers
-function initMobileControls() {
-    const controls = {
-        'move-left': () => playerMove(-1),
-        'move-right': () => playerMove(1),
-        'soft-drop': () => playerDrop(),
-        'hard-drop': () => playerHardDrop(),
-        'rotate-left': () => playerRotate(-1),
-        'rotate-right': () => playerRotate(1),
-        'pause-button': () => togglePause()
-    };
-
-    // Add touch event listeners for mobile buttons
-    Object.entries(controls).forEach(([id, action]) => {
-        const button = document.getElementById(id);
-        if (button) {
-            button.addEventListener('touchstart', (e) => {
-                e.preventDefault(); // Prevent double-firing on mobile
-                if (!isGameOver && isGameStarted) {
-                    action();
-                }
-            });
-            
-            // Add click for testing on desktop
-            button.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (!isGameOver && isGameStarted) {
-                    action();
-                }
-            });
-        }
-    });
-}
-
-// Add start button event listener
-document.addEventListener('DOMContentLoaded', () => {
-    const startButton = document.getElementById('start-button');
-    startButton.addEventListener('click', startGame);
-    
-    initMobileControls();
-});
-
-// Modify game over function
-function gameOver() {
-    isGameOver = true;
-    isGameStarted = false;
-    document.getElementById('game-over-screen').classList.remove('hidden');
-    document.getElementById('final-score').innerText = player.score;
-}
-
-// Modify reset game function
-function resetGame() {
-    arena.forEach(row => row.fill(0));
-    player.score = 0;
-    level = 1;
-    lines = 0;
-    isGameOver = false;
-    isGameStarted = true;
-    document.getElementById('game-over-screen').classList.add('hidden');
-    updateScore();
-    playerReset();
-}
 function createMatrix(w, h) {
     const matrix = [];
     while (h--) {
@@ -295,7 +201,9 @@ function draw() {
     
     // Draw main game pieces
     drawMatrix(arena, { x: 0, y: 0 });
-    drawMatrix(player.matrix, player.pos);
+    if (player.matrix) {
+        drawMatrix(player.matrix, player.pos);
+    }
     
     // Clear and draw next piece preview
     nextPieceContext.fillStyle = '#000';
@@ -314,7 +222,6 @@ function drawGrid() {
     context.strokeStyle = '#333';
     context.lineWidth = 1;
     
-    // Draw vertical lines
     for (let x = 0; x <= BOARD_WIDTH; x++) {
         context.beginPath();
         context.moveTo(x * BLOCK_SIZE, 0);
@@ -322,7 +229,6 @@ function drawGrid() {
         context.stroke();
     }
     
-    // Draw horizontal lines
     for (let y = 0; y <= BOARD_HEIGHT; y++) {
         context.beginPath();
         context.moveTo(0, y * BLOCK_SIZE);
@@ -343,7 +249,6 @@ function drawMatrix(matrix, offset) {
                     BLOCK_SIZE
                 );
                 
-                // Draw block border
                 context.strokeStyle = 'rgba(255, 255, 255, 0.5)';
                 context.lineWidth = 1;
                 context.strokeRect(
@@ -409,7 +314,7 @@ function merge(arena, player) {
 function rotate(matrix, dir) {
     for (let y = 0; y < matrix.length; ++y) {
         for (let x = 0; x < y; ++x) {
-            [matrix[x][y], matrix[y][x]] =[matrix[x][y], matrix[y][x]] = [matrix[y][x], matrix[x][y]];
+            [matrix[x][y], matrix[y][x]] = [matrix[y][x], matrix[x][y]];
         }
     }
     if (dir > 0) {
@@ -440,7 +345,6 @@ function playerHardDrop() {
     arenaSweep();
 }
 
-// Modified sound-playing functions
 function playerMove(dir) {
     player.pos.x += dir;
     if (collide(arena, player)) {
@@ -510,7 +414,6 @@ function arenaSweep() {
     if (rowCount > 0) {
         AudioManager.play('lineClear');
         
-        // Add visual effects for each cleared row
         clearedRows.forEach(y => {
             lineAnimator.addLineAnimation(y);
         });
@@ -546,12 +449,20 @@ function resetGame() {
 }
 
 function togglePause() {
-    isPaused = !isPaused;
-    document.getElementById('pause-screen').classList.toggle('hidden');
+    if (isGameStarted && !isGameOver) {
+        isPaused = !isPaused;
+        document.getElementById('pause-screen').classList.toggle('hidden');
+    }
+}
+
+function startGame() {
+    isGameStarted = true;
+    document.getElementById('start-screen').classList.add('hidden');
+    resetGame();
 }
 
 function update(time = 0) {
-    if (!isGameOver && !isPaused) {
+    if (!isGameOver && !isPaused && isGameStarted) {
         const deltaTime = time - lastTime;
         lastTime = time;
         
@@ -561,8 +472,6 @@ function update(time = 0) {
         }
         
         draw();
-        
-        // Update line clear animations
         lineAnimator.update();
     }
     requestAnimationFrame(update);
@@ -570,49 +479,130 @@ function update(time = 0) {
 
 // Event listeners
 document.addEventListener('keydown', event => {
-    if (!isGameStarted && event.keyCode === 13) { // Enter key
-        startGame();
+    if (!isGameStarted) {
+        if (event.code === 'Enter' || event.code === 'Space') {
+            startGame();
+        }
         return;
     }
-    if (isGameOver) {
-        if (event.keyCode === 82) { // R key
+    
+if (isGameOver) {
+        if (event.code === 'KeyR') {
             resetGame();
         }
         return;
     }
     
-    if (event.keyCode === 80) { // P key
+    if (event.code === 'KeyP') {
         togglePause();
         return;
     }
     
     if (!isPaused) {
-        switch (event.keyCode) {
-            case 37: // Left arrow
+        switch (event.code) {
+            case 'ArrowLeft':
                 playerMove(-1);
                 break;
-            case 39: // Right arrow
+            case 'ArrowRight':
                 playerMove(1);
                 break;
-            case 40: // Down arrow
+            case 'ArrowDown':
                 playerDrop();
                 break;
-            case 32: // Space
+            case 'Space':
                 playerHardDrop();
                 break;
-            case 81: // Q
+            case 'KeyQ':
                 playerRotate(-1);
                 break;
-            case 87: // W
+            case 'KeyW':
                 playerRotate(1);
                 break;
         }
     }
 });
 
+// Mobile controls initialization
+function initMobileControls() {
+    document.getElementById('move-left').addEventListener('click', () => {
+        if (!isPaused && !isGameOver && isGameStarted) playerMove(-1);
+    });
+    
+    document.getElementById('move-right').addEventListener('click', () => {
+        if (!isPaused && !isGameOver && isGameStarted) playerMove(1);
+    });
+    
+    document.getElementById('move-down').addEventListener('click', () => {
+        if (!isPaused && !isGameOver && isGameStarted) playerDrop();
+    });
+    
+    document.getElementById('rotate-left').addEventListener('click', () => {
+        if (!isPaused && !isGameOver && isGameStarted) playerRotate(-1);
+    });
+    
+    document.getElementById('rotate-right').addEventListener('click', () => {
+        if (!isPaused && !isGameOver && isGameStarted) playerRotate(1);
+    });
+    
+    document.getElementById('hard-drop').addEventListener('click', () => {
+        if (!isPaused && !isGameOver && isGameStarted) playerHardDrop();
+    });
+    
+    document.getElementById('pause').addEventListener('click', () => {
+        if (isGameStarted) togglePause();
+    });
+}
+
+// Touch event handling for mobile
+let touchStartX = null;
+let touchStartY = null;
+const SWIPE_THRESHOLD = 30;
+
+document.addEventListener('touchstart', (e) => {
+    if (!isPaused && !isGameOver && isGameStarted) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }
+});
+
+document.addEventListener('touchmove', (e) => {
+    if (!touchStartX || !touchStartY) return;
+    
+    const touchEndX = e.touches[0].clientX;
+    const touchEndY = e.touches[0].clientY;
+    
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+    
+    if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
+        if (deltaX > 0) {
+            playerMove(1);
+        } else {
+            playerMove(-1);
+        }
+        touchStartX = touchEndX;
+    }
+    
+    if (deltaY > SWIPE_THRESHOLD) {
+        playerDrop();
+        touchStartY = touchEndY;
+    }
+    
+    e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('touchend', () => {
+    touchStartX = null;
+    touchStartY = null;
+});
+
+// Initialize button listeners
+document.getElementById('start-button').addEventListener('click', startGame);
 document.getElementById('restart-button').addEventListener('click', resetGame);
 
-// Initialize game
-playerReset();
-updateScore();
+// Initialize mobile controls
+initMobileControls();
+
+// Start the game loop
+draw();
 update();

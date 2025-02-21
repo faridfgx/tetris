@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Tetris</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-info">
+            <div id="score">Score: 0</div>
+            <div id="level">Level: 1</div>
+            <div id="lines">Lines: 0</div>
+            <div id="next-piece">
+                <h3>Next Piece</h3>
+                <canvas id="next-piece-canvas" width="80" height="80"></canvas>
+            </div>
+        </div>
+        <div class="game-area">
+            <canvas id="tetris" width="300" height="600"></canvas>
+            <div class="mobile-controls">
+                <div class="left-controls">
+                    <button id="rotate-left">↺</button>
+                    <button id="hard-drop">⤓</button>
+                    <button id="rotate-right">↻</button>
+                    <button id="pause">⏸</button>
+                </div>
+                <div class="right-controls">
+                    <div class="direction-pad">
+                        <button id="move-up" class="invisible"></button>
+                        <button id="move-left">←</button>
+                        <button id="move-down">↓</button>
+                        <button id="move-right">→</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="start-screen" class="overlay-screen">
+            <h2>TETRIS</h2>
+            <button id="start-button">Start Game</button>
+        </div>
+        <div id="pause-screen" class="overlay-screen hidden">PAUSED</div>
+        <div id="game-over-screen" class="overlay-screen hidden">
+            <h2>GAME OVER</h2>
+            <p>Final Score: <span id="final-score">0</span></p>
+            <button id="restart-button">Play Again</button>
+        </div>
+    </div>
+    <script src="tetris.js"></script>
+</body>
+</html>
