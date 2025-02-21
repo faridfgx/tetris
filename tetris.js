@@ -592,21 +592,46 @@ document.addEventListener('touchend', () => {
 
 
 // Add this function to handle canvas resizing
+// Update the resizeCanvas function
 function resizeCanvas() {
-    const maxHeight = window.innerHeight * 0.8;
-    const maxWidth = window.innerWidth * 0.4;
-    const aspectRatio = canvas.width / canvas.height;
+    const isMobile = window.innerWidth <= 768;
+    const containerHeight = window.innerHeight;
+    const containerWidth = window.innerWidth;
     
-    let newWidth = maxHeight * aspectRatio;
-    let newHeight = maxHeight;
-    
-    if (newWidth > maxWidth) {
-        newWidth = maxWidth;
-        newHeight = maxWidth / aspectRatio;
+    if (isMobile) {
+        // On mobile, use most of the screen height minus space for controls
+        const maxHeight = containerHeight - 200; // Space for controls and info
+        const maxWidth = containerWidth * 0.95; // 95% of screen width
+        const aspectRatio = canvas.width / canvas.height;
+        
+        let newWidth = maxHeight * aspectRatio;
+        let newHeight = maxHeight;
+        
+        // If width is too wide, scale down proportionally
+        if (newWidth > maxWidth) {
+            newWidth = maxWidth;
+            newHeight = maxWidth / aspectRatio;
+        }
+        
+        canvas.style.width = `${newWidth}px`;
+        canvas.style.height = `${newHeight}px`;
+    } else {
+        // Desktop sizing
+        const maxHeight = containerHeight * 0.8;
+        const maxWidth = containerWidth * 0.4;
+        const aspectRatio = canvas.width / canvas.height;
+        
+        let newWidth = maxHeight * aspectRatio;
+        let newHeight = maxHeight;
+        
+        if (newWidth > maxWidth) {
+            newWidth = maxWidth;
+            newHeight = maxWidth / aspectRatio;
+        }
+        
+        canvas.style.width = `${newWidth}px`;
+        canvas.style.height = `${newHeight}px`;
     }
-    
-    canvas.style.width = `${newWidth}px`;
-    canvas.style.height = `${newHeight}px`;
 }
 
 // Add resize event listener
