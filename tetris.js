@@ -386,12 +386,12 @@ function playerReset() {
         gameOver();
     }
 }
-
 function createRandomPiece() {
     const pieces = 'TJLOSZI';
-    return PIECES[pieces[pieces.length * Math.random() | 0]];
+    const piece = PIECES[pieces[pieces.length * Math.random() | 0]];
+    // Create a deep copy of the piece to prevent shared reference
+    return piece.map(row => [...row]);
 }
-
 function arenaSweep() {
     let rowCount = 0;
     let clearedRows = [];
@@ -477,7 +477,7 @@ function update(time = 0) {
     requestAnimationFrame(update);
 }
 
-// Event listeners
+// Update keyboard controls to use only one rotation direction
 document.addEventListener('keydown', event => {
     if (!isGameStarted) {
         if (event.code === 'Enter' || event.code === 'Space') {
@@ -486,7 +486,7 @@ document.addEventListener('keydown', event => {
         return;
     }
     
-if (isGameOver) {
+    if (isGameOver) {
         if (event.code === 'KeyR') {
             resetGame();
         }
@@ -512,9 +512,7 @@ if (isGameOver) {
             case 'Space':
                 playerHardDrop();
                 break;
-            case 'KeyQ':
-                playerRotate(-1);
-                break;
+            case 'ArrowUp':
             case 'KeyW':
                 playerRotate(1);
                 break;
@@ -522,7 +520,7 @@ if (isGameOver) {
     }
 });
 
-// Mobile controls initialization
+// Update the initMobileControls function
 function initMobileControls() {
     document.getElementById('move-left').addEventListener('click', () => {
         if (!isPaused && !isGameOver && isGameStarted) playerMove(-1);
@@ -536,11 +534,7 @@ function initMobileControls() {
         if (!isPaused && !isGameOver && isGameStarted) playerDrop();
     });
     
-    document.getElementById('rotate-left').addEventListener('click', () => {
-        if (!isPaused && !isGameOver && isGameStarted) playerRotate(-1);
-    });
-    
-    document.getElementById('rotate-right').addEventListener('click', () => {
+    document.getElementById('rotate').addEventListener('click', () => {
         if (!isPaused && !isGameOver && isGameStarted) playerRotate(1);
     });
     

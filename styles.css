@@ -36,7 +36,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    min-width: 150px;
+    min-width: 120px;
 }
 
 .game-area {
@@ -59,9 +59,9 @@ body {
 #next-piece-canvas {
     background: #000;
     border: 1px solid #fff;
-    margin-top: 10px;
-    width: 80px;
-    height: 80px;
+    margin-top: 5px;
+    width: 60px;
+    height: 60px;
 }
 
 #score, #level, #lines {
@@ -71,61 +71,15 @@ body {
     border-radius: 5px;
 }
 
-.mobile-controls {
+.controls {
     display: flex;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 600px;
-    padding: 10px;
-}
-
-.left-controls {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    justify-content: center;
     gap: 10px;
+    width: 100%;
     padding: 10px;
 }
 
-.right-controls {
-    padding: 10px;
-}
-
-.direction-pad {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 5px;
-    width: 165px;
-    height: 165px;
-}
-
-.direction-pad button {
-    width: 50px;
-    height: 50px;
-}
-
-.direction-pad #move-up {
-    grid-column: 2;
-    grid-row: 1;
-    visibility: hidden;
-}
-
-.direction-pad #move-left {
-    grid-column: 1;
-    grid-row: 2;
-}
-
-.direction-pad #move-down {
-    grid-column: 2;
-    grid-row: 2;
-}
-
-.direction-pad #move-right {
-    grid-column: 3;
-    grid-row: 2;
-}
-
-.mobile-controls button {
+.controls button {
     width: 50px;
     height: 50px;
     font-size: 24px;
@@ -141,7 +95,7 @@ body {
     padding: 0;
 }
 
-.mobile-controls button:active {
+.controls button:active {
     background: rgba(255, 255, 255, 0.3);
 }
 
@@ -201,10 +155,14 @@ body {
         max-height: 60vh;
     }
 
-    .mobile-controls {
-        flex-direction: row;
-        justify-content: space-between;
-        padding: 0;
+    .controls {
+        padding: 5px;
+    }
+
+    .controls button {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
     }
 }
 
@@ -215,16 +173,5 @@ body {
 
     #tetris {
         max-height: 70vh;
-    }
-
-    .mobile-controls button {
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
-    }
-
-    .direction-pad {
-        width: 135px;
-        height: 135px;
     }
 }
