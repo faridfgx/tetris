@@ -409,20 +409,20 @@ function initEnhancedFeatures() {
   window.lineAnimator = new EnhancedLineAnimator(context, BLOCK_SIZE);
   
   // Set up a toggle button for vibration
-  const controlsDiv = document.querySelector('.controls');
-  const vibrationButton = document.createElement('button');
-  vibrationButton.id = 'toggle-vibration';
-  vibrationButton.innerHTML = '📳';
-  vibrationButton.title = 'Toggle Vibration';
+  //const controlsDiv = document.querySelector('.controls');
+  //const vibrationButton = document.createElement('button');
+  //vibrationButton.id = 'toggle-vibration';
+  //vibrationButton.innerHTML = '📳';
+  //vibrationButton.title = 'Toggle Vibration';
   
-  vibrationButton.addEventListener('click', () => {
-    const enabled = HapticFeedback.toggle();
-    vibrationButton.style.opacity = enabled ? '1' : '0.5';
+  //vibrationButton.addEventListener('click', () => {
+    //const enabled = HapticFeedback.toggle();
+    //vibrationButton.style.opacity = enabled ? '1' : '0.5';
     // Provide feedback when toggled
-    if (enabled) HapticFeedback.vibrate('move');
-  });
+   // if (enabled) HapticFeedback.vibrate('move');
+  //});
   
-  controlsDiv.appendChild(vibrationButton);
+  //controlsDiv.appendChild(vibrationButton);
   
   // Check if vibration is supported
   if (!HapticFeedback.isSupported()) {
