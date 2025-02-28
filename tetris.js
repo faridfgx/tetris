@@ -650,3 +650,43 @@ initMobileControls();
 // Start the game loop
 draw();
 update();
+// This script will load the enhancements into the existing Tetris game
+// Add this to the end of your tetris.js file or include it as a separate script
+
+// First, let's create a function to load our enhancements
+function loadTetrisEnhancements() {
+  console.log('Loading Tetris enhancements...');
+  
+  // Check if we've already loaded
+  if (window.enhancementsLoaded) return;
+  
+  // Create a script element and append it to the document
+  const script = document.createElement('script');
+  script.src = 'tetris-enhancements.js';
+  script.onload = function() {
+    console.log('Tetris enhancements loaded successfully!');
+    
+    // Initialize enhancements if they're ready
+    if (typeof initEnhancedFeatures === 'function') {
+      initEnhancedFeatures();
+    }
+  };
+  
+  script.onerror = function() {
+    console.error('Failed to load Tetris enhancements.');
+  };
+  
+  document.body.appendChild(script);
+  window.enhancementsLoaded = true;
+}
+
+// Add this line to your HTML file to add the script reference:
+// <script src="tetris-enhancements.js"></script>
+
+// Or you can load it automatically like this:
+document.addEventListener('DOMContentLoaded', loadTetrisEnhancements);
+
+// If the page is already loaded, initialize immediately
+if (document.readyState === 'complete') {
+  loadTetrisEnhancements();
+}
