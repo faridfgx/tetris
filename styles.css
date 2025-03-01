@@ -60,8 +60,8 @@ body {
     background: #000;
     border: 1px solid #fff;
     margin-top: 5px;
-    width: 50px;
-    height: 50px;
+    width: 80px;
+    height: 80px;
 }
 
 #score, #level, #lines {
@@ -69,6 +69,13 @@ body {
     padding: 10px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+/* Highlight when score changes */
+#score.highlight, #level.highlight, #lines.highlight {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
 }
 
 .controls {
@@ -88,7 +95,7 @@ body {
     color: white;
     border-radius: 8px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -97,6 +104,12 @@ body {
 
 .controls button:active {
     background: rgba(255, 255, 255, 0.3);
+    transform: scale(0.95);
+}
+
+/* Button glow effects */
+.controls button:hover {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 .hidden {
@@ -109,29 +122,58 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     background: rgba(0, 0, 0, 0.9);
-    padding: 20px;
+    padding: 30px;
     border-radius: 10px;
     text-align: center;
     font-size: 24px;
     z-index: 100;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+    min-width: 250px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 #start-button, #restart-button {
     margin-top: 20px;
-    padding: 10px 20px;
+    padding: 12px 24px;
     font-size: 18px;
     background: #4CAF50;
     border: none;
     color: white;
     border-radius: 5px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 0.3s, transform 0.2s;
 }
 
 #start-button:hover, #restart-button:hover {
     background: #45a049;
+    transform: scale(1.05);
 }
 
+#start-button:active, #restart-button:active {
+    transform: scale(0.98);
+}
+
+/* Game over screen animations */
+#game-over-screen h2 {
+    margin-bottom: 15px;
+    animation: pulse 1.5s infinite alternate;
+}
+
+#game-over-screen #final-score {
+    font-size: 32px;
+    font-weight: bold;
+    color: #FFD700;
+    display: block;
+    margin: 15px 0;
+}
+
+@keyframes pulse {
+    from { opacity: 0.7; transform: scale(1); }
+    to { opacity: 1; transform: scale(1.05); }
+}
+
+/* Responsive layout */
 @media (max-width: 768px) {
     .game-container {
         flex-direction: column;
@@ -170,6 +212,7 @@ body {
         left: 0;
         right: 0;
         background: rgba(0, 0, 0, 0.8);
+        z-index: 50;
     }
 
     .controls button {
@@ -177,8 +220,14 @@ body {
         max-width: 60px;
         height: 45px;
     }
+    
+    #next-piece-canvas {
+        width: 60px;
+        height: 60px;
+    }
 }
 
+/* Small screens adjustments */
 @media (max-height: 600px) {
     .game-container {
         padding: 5px;
@@ -194,5 +243,33 @@ body {
 
     .controls button {
         height: 40px;
+        font-size: 20px;
     }
+    
+    .overlay-screen {
+        padding: 15px;
+        font-size: 20px;
+    }
+}
+
+/* Background canvas effects */
+.background-canvas {
+    pointer-events: none;
+    opacity: 0.5;
+    mix-blend-mode: screen;
+}
+
+/* Pause button styling */
+#pause {
+    background: rgba(255, 165, 0, 0.2);
+}
+
+/* Hard drop button styling */
+#hard-drop {
+    background: rgba(255, 0, 0, 0.2);
+}
+
+/* Rotate button styling */
+#rotate {
+    background: rgba(0, 191, 255, 0.2);
 }
