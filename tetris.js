@@ -368,11 +368,11 @@ class EnhancedLineAnimator {
                 x: Math.random() * (BOARD_WIDTH * this.blockSize),
                 y: y * this.blockSize,
                 size: Math.random() * 5 + 2,
-                speedX: (Math.random() - 0.5) * 12,  // More spread
-                speedY: (Math.random() - 2) * 6,     // More upward motion
+                speedX: (Math.random() - 0.5) * 8,  // Reduced from 12 for slower movement
+                speedY: (Math.random() - 2) * 4,    // Reduced from 6 for slower movement
                 color: `hsl(${Math.random() * 360}, 80%, 60%)`,
-                life: 100,
-                gravity: 0.2 + Math.random() * 0.1
+                life: 150,  // Increased from 100 for longer lifetime
+                gravity: 0.15 + Math.random() * 0.08  // Reduced from 0.2 for slower falling
             });
         }
         
@@ -387,7 +387,8 @@ class EnhancedLineAnimator {
         if (this.flashEffect.active) {
             ctx.fillStyle = `rgba(255, 255, 255, ${this.flashEffect.alpha})`;
             ctx.fillRect(0, 0, BOARD_WIDTH * this.blockSize, BOARD_HEIGHT * this.blockSize);
-            this.flashEffect.alpha -= 0.06;
+            // Slow down the flash fade-out by decreasing the decrement value
+            this.flashEffect.alpha -= 0.03; // Changed from 0.06
             
             if (this.flashEffect.alpha <= 0) {
                 this.flashEffect.active = false;
@@ -416,9 +417,10 @@ class EnhancedLineAnimator {
                         block.y + block.height / 2
                     );
                     
-                    block.rotation += block.speed * block.direction * 0.05;
-                    block.scale *= 0.95;
-                    block.x += block.speed * block.direction;
+                    // Slow down rotation and scaling for a more visible effect
+                    block.rotation += block.speed * block.direction * 0.02; // Changed from 0.05
+                    block.scale *= 0.98; // Changed from 0.95 for slower shrinking
+                    block.x += block.speed * block.direction * 0.6; // Added multiplier to slow movement
                     
                     ctx.rotate(block.rotation);
                     ctx.scale(block.scale, block.scale);
@@ -438,11 +440,11 @@ class EnhancedLineAnimator {
             // Update and draw particles
             if (animation.particles && Array.isArray(animation.particles)) {
                 animation.particles.forEach(particle => {
-                    particle.x += particle.speedX;
-                    particle.y += particle.speedY;
-                    particle.speedY += particle.gravity;
-                    particle.life -= 2;
-                    particle.size *= 0.98;
+                    particle.x += particle.speedX * 0.7; // Slowed down horizontal movement
+                    particle.y += particle.speedY * 0.7; // Slowed down vertical movement
+                    particle.speedY += particle.gravity * 0.7; // Reduced gravity effect
+                    particle.life -= 1; // Reduced life decrement from 2 to 1
+                    particle.size *= 0.99; // Slower shrinking
                     
                     ctx.beginPath();
                     ctx.fillStyle = particle.color;
@@ -454,8 +456,8 @@ class EnhancedLineAnimator {
             
             ctx.globalAlpha = 1;
             
-            // Update animation state
-            animation.alpha -= 0.03;
+            // Update animation state - slower alpha decrease for longer visibility
+            animation.alpha -= 0.015; // Changed from 0.03
             
             return animation.alpha > 0;
         });
