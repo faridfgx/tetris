@@ -2,14 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Tetris</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#222222">
+    <meta name="description" content="Modern Tetris game with enhanced graphics and animations">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <title>Tetris Web App</title>
+    
     <link rel="stylesheet" href="styles.css">
+    <!-- Remove manifest reference for local testing -->
+    <!-- <link rel="manifest" href="manifest.json"> -->
+    
+    <!-- App Icons -->
+    <link rel="icon" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+    <link rel="shortcut icon" href="favicon.png">
+    
+    <!-- Inline the critical parts of the manifest for local testing -->
+    <script>
+        // Create a simple manifest-like object for offline capability
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
+    </script>
 </head>
 <body>
     <div class="game-container">
         <div class="game-info">
             <div id="score">Score: 0</div>
+            <div id="high-score">High Score: 0</div>
             <div id="level">Level: 1</div>
             <div id="lines">Lines: 0</div>
             <div id="next-piece">
@@ -18,6 +49,7 @@
         </div>
         <div class="game-area">
             <canvas id="tetris" width="300" height="600"></canvas>
+           
             <div class="controls">
                 <button id="rotate">↻</button>
                 <button id="pause">⏸</button>
@@ -35,9 +67,44 @@
         <div id="game-over-screen" class="overlay-screen hidden">
             <h2>GAME OVER</h2>
             <p>Final Score: <span id="final-score">0</span></p>
+            <p>High Score: <span id="game-over-high-score">0</span></p>
+            <p id="new-high-score-message" class="hidden new-high-score">New High Score!</p>
             <button id="restart-button">Play Again</button>
         </div>
     </div>
+    
     <script src="tetris.js"></script>
+    
+    <!-- Simple service worker for local testing -->
+    <script>
+        // Create a simple service worker file if it doesn't exist
+        const swContent = `
+            self.addEventListener('install', function(event) {
+                self.skipWaiting();
+            });
+            
+            self.addEventListener('fetch', function(event) {
+                event.respondWith(fetch(event.request));
+            });
+        `;
+        
+        // Check if we can write to the filesystem (this will only work in certain contexts)
+        if (window.File && window.FileReader && window.FileList && window.Blob) {
+            try {
+                // This is a fallback and may not work in all browsers
+                const file = new Blob([swContent], {type: 'application/javascript'});
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(file);
+                a.download = 'sw.js';
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                // Uncomment this line to actually download the file
+                // a.click();
+                document.body.removeChild(a);
+            } catch (e) {
+                console.log('Could not create service worker file');
+            }
+        }
+    </script>
 </body>
 </html>

@@ -3,6 +3,16 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    touch-action: manipulation; /* Improved touch behaviors */
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+}
+
+html, body {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overscroll-behavior: none; /* Prevent pull-to-refresh */
 }
 
 body {
@@ -15,7 +25,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
+    user-select: none; /* Prevent text selection */
 }
 
 .game-container {
@@ -54,6 +64,7 @@ body {
     max-height: 80vh;
     width: auto;
     height: auto;
+    touch-action: none; /* Prevent browser handling of touch gestures */
 }
 
 #next-piece-canvas {
@@ -64,7 +75,7 @@ body {
     height: 80px;
 }
 
-#score, #level, #lines {
+#score, #level, #lines, #high-score {
     font-size: 20px;
     padding: 10px;
     background: rgba(255, 255, 255, 0.1);
@@ -73,7 +84,7 @@ body {
 }
 
 /* Highlight when score changes */
-#score.highlight, #level.highlight, #lines.highlight {
+#score.highlight, #level.highlight, #lines.highlight, #high-score.highlight {
     background: rgba(255, 255, 255, 0.3);
     transform: scale(1.05);
 }
@@ -100,6 +111,7 @@ body {
     align-items: center;
     justify-content: center;
     padding: 0;
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
 }
 
 .controls button:active {
@@ -168,12 +180,57 @@ body {
     margin: 15px 0;
 }
 
+#game-over-screen #game-over-high-score {
+    font-size: 24px;
+    font-weight: bold;
+    color: #FFA500;
+}
+
+.new-high-score {
+    color: #FF4500;
+    font-weight: bold;
+    font-size: 20px;
+    margin: 10px 0;
+    animation: pulse 1.2s infinite alternate;
+}
+
 @keyframes pulse {
     from { opacity: 0.7; transform: scale(1); }
     to { opacity: 1; transform: scale(1.05); }
 }
 
+/* Install button */
+.install-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 8px 16px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 50;
+    transition: all 0.3s ease;
+}
+
+.install-button:hover {
+    background: #45a049;
+    transform: scale(1.05);
+}
+
 /* Responsive layout */
+.tap-hint {
+    text-align: center;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 5px;
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+}
+
 @media (max-width: 768px) {
     .game-container {
         flex-direction: column;
@@ -181,6 +238,7 @@ body {
         padding: 10px;
         height: 100vh;
         gap: 10px;
+        border-radius: 0; /* Full screen on mobile */
     }
     
     .game-info {
@@ -219,11 +277,25 @@ body {
         flex: 1;
         max-width: 60px;
         height: 45px;
+        min-width: 45px; /* Ensure buttons are tappable on small screens */
     }
     
     #next-piece-canvas {
         width: 60px;
         height: 60px;
+    }
+    
+    /* Make all text elements more readable on mobile */
+    #score, #level, #lines {
+        font-size: 16px;
+        padding: 8px;
+    }
+    
+    /* Adjust overlay screens for mobile */
+    .overlay-screen {
+        padding: 20px;
+        min-width: 80%;
+        max-width: 90%;
     }
 }
 
@@ -252,6 +324,39 @@ body {
     }
 }
 
+/* Landscape mode adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+    .game-container {
+        flex-direction: row;
+        padding: 5px;
+    }
+    
+    .game-info {
+        flex-direction: column;
+        min-width: 80px;
+    }
+    
+    #tetris {
+        max-height: 95vh;
+        height: calc(100vh - 20px);
+    }
+    
+    .controls {
+        position: relative;
+        flex-direction: column;
+        height: 100%;
+        padding: 0 5px;
+        max-width: 70px;
+        margin-left: 10px;
+    }
+    
+    .controls button {
+        height: 50px;
+        width: 50px;
+        margin: 5px 0;
+    }
+}
+
 /* Background canvas effects */
 .background-canvas {
     pointer-events: none;
@@ -272,4 +377,17 @@ body {
 /* Rotate button styling */
 #rotate {
     background: rgba(0, 191, 255, 0.2);
+}
+
+/* iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+    body {
+        /* Fix for iOS height issue */
+        height: -webkit-fill-available;
+    }
+    
+    .install-button {
+        /* Display installation instructions for iOS */
+        display: none;
+    }
 }

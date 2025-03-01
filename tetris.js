@@ -13,11 +13,15 @@ const COLORS = [
     '#3877FF'  // Z
 ];
 
-// Sound effects with fallback
+// High score variable - declared at global scope
+let highScore = 0;
+
+// Sound effects with actual sound files
 const AUDIO = {
-    lineClear: new Audio('data:audio/wav;base64,AAA'),
-    move: new Audio('data:audio/wav;base64,AAA'),
-    rotate: new Audio('data:audio/wav;base64,AAA')
+    lineClear: new Audio('scoreline.wav'),
+    move: new Audio('rotate.wav'),
+    rotate: new Audio('rotate.wav'),
+    gameOver: new Audio('gameover.wav')
 };
 
 // Audio manager to handle sound effects safely
@@ -26,6 +30,8 @@ const AudioManager = {
         Object.values(AUDIO).forEach(audio => {
             if (audio) {
                 audio.volume = 0.3;
+                // Preload sounds
+                audio.load();
             }
         });
     },
@@ -145,6 +151,11 @@ class BackgroundManager {
     
     initialize() {
         const container = document.querySelector('.game-container');
+        if (!container) {
+            console.warn('Game container not found');
+            return;
+        }
+        
         this.canvas.classList.add('background-canvas');
         this.canvas.style.position = 'absolute';
         this.canvas.style.top = '0';
@@ -175,6 +186,8 @@ class BackgroundManager {
     
     resizeCanvas() {
         const container = document.querySelector('.game-container');
+        if (!container) return;
+        
         const rect = container.getBoundingClientRect();
         this.canvas.width = rect.width;
         this.canvas.height = rect.height;
@@ -498,24 +511,49 @@ let level = 1;
 let lines = 0;
 
 // Canvas setup
-const canvas = document.getElementById('tetris');
-const context = canvas.getContext('2d');
-
-const nextPieceCanvas = document.getElementById('next-piece-canvas');
-const nextPieceContext = nextPieceCanvas.getContext('2d');
-
-// Game objects
-const arena = createMatrix(BOARD_WIDTH, BOARD_HEIGHT);
-const player = {
-    pos: { x: 0, y: 0 },
-    matrix: null,
-    score: 0,
-    nextPiece: null
-};
+let canvas;
+let context;
+let nextPieceCanvas;
+let nextPieceContext;
 
 // Initialize background manager and line animator
 let backgroundManager;
 let lineAnimator;
+
+// Game objects
+let arena;
+let player;
+
+// Initialize all DOM elements and game objects
+function initializeGameElements() {
+    // Get canvas elements
+    canvas = document.getElementById('tetris');
+    if (!canvas) {
+        console.error('Tetris canvas not found!');
+        return false;
+    }
+    
+    context = canvas.getContext('2d');
+    
+    nextPieceCanvas = document.getElementById('next-piece-canvas');
+    if (!nextPieceCanvas) {
+        console.error('Next piece canvas not found!');
+        return false;
+    }
+    
+    nextPieceContext = nextPieceCanvas.getContext('2d');
+    
+    // Create game arena and player
+    arena = createMatrix(BOARD_WIDTH, BOARD_HEIGHT);
+    player = {
+        pos: { x: 0, y: 0 },
+        matrix: null,
+        score: 0,
+        nextPiece: null
+    };
+    
+    return true;
+}
 
 function createMatrix(w, h) {
     const matrix = [];
@@ -526,6 +564,8 @@ function createMatrix(w, h) {
 }
 
 function draw() {
+    if (!context || !canvas) return;
+    
     // Clear main canvas
     context.fillStyle = '#000';
     context.fillRect(0, 0, canvas.width, canvas.height);
@@ -540,19 +580,23 @@ function draw() {
     }
     
     // Clear and draw next piece preview
-    nextPieceContext.fillStyle = '#000';
-    nextPieceContext.fillRect(0, 0, nextPieceCanvas.width, nextPieceCanvas.height);
-    
-    if (player.nextPiece) {
-        const previewBlock = nextPieceCanvas.width / 4;
-        const offsetX = (nextPieceCanvas.width - (player.nextPiece[0].length * previewBlock)) / 2;
-        const offsetY = (nextPieceCanvas.height - (player.nextPiece.length * previewBlock)) / 2;
+    if (nextPieceContext && nextPieceCanvas) {
+        nextPieceContext.fillStyle = '#000';
+        nextPieceContext.fillRect(0, 0, nextPieceCanvas.width, nextPieceCanvas.height);
         
-        drawPreviewPiece(player.nextPiece, offsetX, offsetY, previewBlock);
+        if (player.nextPiece) {
+            const previewBlock = nextPieceCanvas.width / 4;
+            const offsetX = (nextPieceCanvas.width - (player.nextPiece[0].length * previewBlock)) / 2;
+            const offsetY = (nextPieceCanvas.height - (player.nextPiece.length * previewBlock)) / 2;
+            
+            drawPreviewPiece(player.nextPiece, offsetX, offsetY, previewBlock);
+        }
     }
 }
 
 function drawGrid() {
+    if (!context || !canvas) return;
+    
     context.strokeStyle = '#333';
     context.lineWidth = 1;
     
@@ -572,6 +616,8 @@ function drawGrid() {
 }
 
 function drawMatrix(matrix, offset) {
+    if (!context) return;
+    
     matrix.forEach((row, y) => {
         row.forEach((value, x) => {
             if (value !== 0) {
@@ -597,6 +643,8 @@ function drawMatrix(matrix, offset) {
 }
 
 function drawPreviewPiece(matrix, offsetX, offsetY, blockSize) {
+    if (!nextPieceContext) return;
+    
     matrix.forEach((row, y) => {
         row.forEach((value, x) => {
             if (value !== 0) {
@@ -622,6 +670,9 @@ function drawPreviewPiece(matrix, offsetX, offsetY, blockSize) {
 }
 
 function collide(arena, player) {
+    // Safety check to prevent null errors
+    if (!player || !player.matrix || !player.pos) return true;
+    
     const [m, o] = [player.matrix, player.pos];
     for (let y = 0; y < m.length; ++y) {
         for (let x = 0; x < m[y].length; ++x) {
@@ -636,6 +687,9 @@ function collide(arena, player) {
 }
 
 function merge(arena, player) {
+    // Safety check
+    if (!player || !player.matrix || !player.pos) return;
+    
     player.matrix.forEach((row, y) => {
         row.forEach((value, x) => {
             if (value !== 0) {
@@ -698,6 +752,9 @@ function playerMove(dir) {
 }
 
 function playerRotate(dir) {
+    // Safety check
+    if (!player || !player.matrix) return;
+    
     const pos = player.pos.x;
     let offset = 1;
     rotate(player.matrix, dir);
@@ -717,15 +774,19 @@ function playerRotate(dir) {
 }
 
 function playerReset() {
+    // Initialize nextPiece if it doesn't exist
     if (!player.nextPiece) {
         player.nextPiece = createRandomPiece();
     }
     
     player.matrix = player.nextPiece;
     player.nextPiece = createRandomPiece();
+    
+    // Reset position
     player.pos.y = 0;
     player.pos.x = Math.floor((arena[0].length - player.matrix[0].length) / 2);
     
+    // Check for collision immediately after spawning a new piece
     if (collide(arena, player)) {
         gameOver();
     }
@@ -733,7 +794,14 @@ function playerReset() {
 
 function createRandomPiece() {
     const pieces = 'TJLOSZI';
-    const piece = PIECES[pieces[pieces.length * Math.random() | 0]];
+    const pieceType = pieces[pieces.length * Math.random() | 0];
+    const piece = PIECES[pieceType];
+    if (!piece) {
+        console.error('Invalid piece type:', pieceType);
+        // Fallback to a simple piece if something goes wrong
+        return [[1, 1], [1, 1]];
+    }
+    
     // Create a deep copy of the piece to prevent shared reference
     return piece.map(row => [...row]);
 }
@@ -783,7 +851,7 @@ function arenaSweep() {
         level = Math.floor(lines / 10) + 1;
         
         // If level increased, change background and add vibration
-        if (level > oldLevel) {
+        if (level > oldLevel && backgroundManager) {
             backgroundManager.changeBackground();
             HapticFeedback.vibrate('levelUp');
         }
@@ -792,40 +860,125 @@ function arenaSweep() {
     }
 }
 
-function updateScore() {
-    document.getElementById('score').innerText = `Score: ${player.score}`;
-    document.getElementById('level').innerText = `Level: ${level}`;
-    document.getElementById('lines').innerText = `Lines: ${lines}`;
+// Local storage functions for high score
+function saveHighScore() {
+    try {
+        localStorage.setItem('tetrisHighScore', highScore.toString());
+    } catch (e) {
+        console.warn('Unable to save high score to local storage:', e);
+    }
 }
 
-function gameOver() {
-    isGameOver = true;
-    document.getElementById('game-over-screen').classList.remove('hidden');
-    document.getElementById('final-score').innerText = player.score;
-    HapticFeedback.vibrate('gameOver');
+function loadHighScore() {
+    try {
+        const savedScore = localStorage.getItem('tetrisHighScore');
+        if (savedScore) {
+            highScore = parseInt(savedScore, 10);
+            const highScoreElement = document.getElementById('high-score');
+            if (highScoreElement) {
+                highScoreElement.innerText = `High Score: ${highScore}`;
+            }
+        }
+    } catch (e) {
+        console.warn('Unable to load high score from local storage:', e);
+    }
+}
+
+function updateScore() {
+    const scoreElement = document.getElementById('score');
+    const levelElement = document.getElementById('level');
+    const linesElement = document.getElementById('lines');
+    const highScoreElement = document.getElementById('high-score');
+    
+    if (scoreElement) scoreElement.innerText = `Score: ${player.score}`;
+    if (levelElement) levelElement.innerText = `Level: ${level}`;
+    if (linesElement) linesElement.innerText = `Lines: ${lines}`;
+    
+    // Update high score if current score is higher
+    if (player.score > highScore) {
+        highScore = player.score;
+        if (highScoreElement) {
+            highScoreElement.innerText = `High Score: ${highScore}`;
+            // Save high score to local storage
+            saveHighScore();
+            
+            // Add highlight animation
+            highScoreElement.classList.add('highlight');
+            setTimeout(() => {
+                highScoreElement.classList.remove('highlight');
+            }, 1000);
+        }
+    }
 }
 
 function resetGame() {
+    if (!arena) return;
+    
     arena.forEach(row => row.fill(0));
     player.score = 0;
     level = 1;
     lines = 0;
     isGameOver = false;
-    document.getElementById('game-over-screen').classList.add('hidden');
+    
+    const gameOverScreen = document.getElementById('game-over-screen');
+    if (gameOverScreen) {
+        gameOverScreen.classList.add('hidden');
+    }
+    
     updateScore();
     playerReset();
+}
+
+function gameOver() {
+    isGameOver = true;
+    const gameOverScreen = document.getElementById('game-over-screen');
+    const finalScoreElement = document.getElementById('final-score');
+    const gameOverHighScoreElement = document.getElementById('game-over-high-score');
+    const newHighScoreMessage = document.getElementById('new-high-score-message');
+    
+    if (gameOverScreen) {
+        gameOverScreen.classList.remove('hidden');
+    }
+    
+    if (finalScoreElement) {
+        finalScoreElement.innerText = player.score;
+    }
+    
+    // Display high score on game over screen
+    if (gameOverHighScoreElement) {
+        gameOverHighScoreElement.innerText = highScore;
+    }
+    
+    // If this is a new high score, show the message
+    if (newHighScoreMessage) {
+        if (player.score >= highScore && player.score > 0) {
+            newHighScoreMessage.classList.remove('hidden');
+        } else {
+            newHighScoreMessage.classList.add('hidden');
+        }
+    }
+    
+    // Play game over sound
+    AudioManager.play('gameOver');
+    HapticFeedback.vibrate('gameOver');
 }
 
 function togglePause() {
     if (isGameStarted && !isGameOver) {
         isPaused = !isPaused;
-        document.getElementById('pause-screen').classList.toggle('hidden');
+        const pauseScreen = document.getElementById('pause-screen');
+        if (pauseScreen) {
+            pauseScreen.classList.toggle('hidden');
+        }
     }
 }
 
 function startGame() {
     isGameStarted = true;
-    document.getElementById('start-screen').classList.add('hidden');
+    const startScreen = document.getElementById('start-screen');
+    if (startScreen) {
+        startScreen.classList.add('hidden');
+    }
     resetGame();
 }
 
@@ -855,6 +1008,8 @@ function update(time = 0) {
 }
 
 function resizeCanvas() {
+    if (!canvas) return;
+    
     const isMobile = window.innerWidth <= 768;
     const containerHeight = window.innerHeight;
     const containerWidth = window.innerWidth;
@@ -895,34 +1050,103 @@ function resizeCanvas() {
     }
 }
 
-// Initialize the game and all enhancements
-function initGame() {
-    // Initialize background manager
-    backgroundManager = new BackgroundManager();
+function initTouchEvents() {
+    if (!canvas) return;
     
-    // Initialize line animator
-    lineAnimator = new EnhancedLineAnimator(context, BLOCK_SIZE);
+    let touchStartX = null;
+    let touchStartY = null;
+    const SWIPE_THRESHOLD = 30;
     
-    // Initialize touch events
-    initTouchEvents();
+    document.addEventListener('touchstart', (e) => {
+        if (!isPaused && !isGameOver && isGameStarted) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }
+    });
     
-    // Initialize button listeners
-    document.getElementById('start-button').addEventListener('click', startGame);
-    document.getElementById('restart-button').addEventListener('click', resetGame);
-    initMobileControls();
+    document.addEventListener('touchmove', (e) => {
+        if (!touchStartX || !touchStartY) return;
+        
+        const touchEndX = e.touches[0].clientX;
+        const touchEndY = e.touches[0].clientY;
+        
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = touchEndY - touchStartY;
+        
+        if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
+            if (deltaX > 0) {
+                playerMove(1);
+            } else {
+                playerMove(-1);
+            }
+            touchStartX = touchEndX;
+        }
+        
+        if (deltaY > SWIPE_THRESHOLD) {
+            playerDrop();
+            touchStartY = touchEndY;
+        }
+        
+        e.preventDefault();
+    }, { passive: false });
     
-    // Add keyboard event listeners
-    document.addEventListener('keydown', handleKeyPress);
+    document.addEventListener('touchend', () => {
+        touchStartX = null;
+        touchStartY = null;
+    });
     
-    // Add resize event listener
-    window.addEventListener('resize', resizeCanvas);
+    // Add tap-to-rotate functionality
+    canvas.addEventListener('click', (e) => {
+        if (!isPaused && !isGameOver && isGameStarted) {
+            // Simple tap on the canvas will rotate the piece
+            playerRotate(1);
+        }
+    });
+}
+
+function initMobileControls() {
+    const moveLeft = document.getElementById('move-left');
+    const moveRight = document.getElementById('move-right');
+    const moveDown = document.getElementById('move-down');
+    const rotate = document.getElementById('rotate');
+    const hardDrop = document.getElementById('hard-drop');
+    const pause = document.getElementById('pause');
     
-    // Set initial canvas size
-    resizeCanvas();
+    if (moveLeft) {
+        moveLeft.addEventListener('click', () => {
+            if (!isPaused && !isGameOver && isGameStarted) playerMove(-1);
+        });
+    }
     
-    // Start the game loop
-    draw();
-    update();
+    if (moveRight) {
+        moveRight.addEventListener('click', () => {
+            if (!isPaused && !isGameOver && isGameStarted) playerMove(1);
+        });
+    }
+    
+    if (moveDown) {
+        moveDown.addEventListener('click', () => {
+            if (!isPaused && !isGameOver && isGameStarted) playerDrop();
+        });
+    }
+    
+    if (rotate) {
+        rotate.addEventListener('click', () => {
+            if (!isPaused && !isGameOver && isGameStarted) playerRotate(1);
+        });
+    }
+    
+    if (hardDrop) {
+        hardDrop.addEventListener('click', () => {
+            if (!isPaused && !isGameOver && isGameStarted) playerHardDrop();
+        });
+    }
+    
+    if (pause) {
+        pause.addEventListener('click', () => {
+            if (isGameStarted) togglePause();
+        });
+    }
 }
 
 function handleKeyPress(event) {
@@ -967,78 +1191,59 @@ function handleKeyPress(event) {
     }
 }
 
-function initMobileControls() {
-    document.getElementById('move-left').addEventListener('click', () => {
-        if (!isPaused && !isGameOver && isGameStarted) playerMove(-1);
-    });
+// Initialize the game and all enhancements
+function initGame() {
+    // First initialize all DOM elements and game objects
+    if (!initializeGameElements()) {
+        console.error('Failed to initialize game elements');
+        return;
+    }
     
-    document.getElementById('move-right').addEventListener('click', () => {
-        if (!isPaused && !isGameOver && isGameStarted) playerMove(1);
-    });
+    // Load high score from local storage
+    loadHighScore();
     
-    document.getElementById('move-down').addEventListener('click', () => {
-        if (!isPaused && !isGameOver && isGameStarted) playerDrop();
-    });
+    // Initialize background manager
+    backgroundManager = new BackgroundManager();
     
-    document.getElementById('rotate').addEventListener('click', () => {
-        if (!isPaused && !isGameOver && isGameStarted) playerRotate(1);
-    });
+    // Initialize line animator
+    lineAnimator = new EnhancedLineAnimator(context, BLOCK_SIZE);
     
-    document.getElementById('hard-drop').addEventListener('click', () => {
-        if (!isPaused && !isGameOver && isGameStarted) playerHardDrop();
-    });
+    // Initialize touch events
+    initTouchEvents();
     
-    document.getElementById('pause').addEventListener('click', () => {
-        if (isGameStarted) togglePause();
-    });
-}
-
-function initTouchEvents() {
-    let touchStartX = null;
-    let touchStartY = null;
-    const SWIPE_THRESHOLD = 30;
+    // Initialize button listeners
+    const startButton = document.getElementById('start-button');
+    const restartButton = document.getElementById('restart-button');
     
-    document.addEventListener('touchstart', (e) => {
-        if (!isPaused && !isGameOver && isGameStarted) {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-        }
-    });
+    if (startButton) {
+        startButton.addEventListener('click', startGame);
+    }
     
-    document.addEventListener('touchmove', (e) => {
-        if (!touchStartX || !touchStartY) return;
-        
-        const touchEndX = e.touches[0].clientX;
-        const touchEndY = e.touches[0].clientY;
-        
-        const deltaX = touchEndX - touchStartX;
-        const deltaY = touchEndY - touchStartY;
-        
-        if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
-            if (deltaX > 0) {
-                playerMove(1);
-            } else {
-                playerMove(-1);
-            }
-            touchStartX = touchEndX;
-        }
-        
-        if (deltaY > SWIPE_THRESHOLD) {
-            playerDrop();
-            touchStartY = touchEndY;
-        }
-        
-        e.preventDefault();
-    }, { passive: false });
+    if (restartButton) {
+        restartButton.addEventListener('click', resetGame);
+    }
     
-    document.addEventListener('touchend', () => {
-        touchStartX = null;
-        touchStartY = null;
-    });
+    initMobileControls();
+    
+    // Add keyboard event listeners
+    document.addEventListener('keydown', handleKeyPress);
+    
+    // Add resize event listener
+    window.addEventListener('resize', resizeCanvas);
+    
+    // Set initial canvas size
+    resizeCanvas();
+    
+    // Start the game loop
+    draw();
+    update();
 }
 
 // Initialize the game when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', initGame);
+document.addEventListener('DOMContentLoaded', () => {
+    // Wait a short time to ensure all elements are loaded
+    setTimeout(initGame, 100);
+});
 
 // If the page is already loaded, initialize immediately
 if (document.readyState === 'complete') {
