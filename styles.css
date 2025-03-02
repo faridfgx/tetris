@@ -122,8 +122,8 @@ body {
 }
 
 .toggle-button {
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -308,7 +308,7 @@ body {
     .game-container {
         flex-direction: column;
         margin: 0;
-        padding: 10px;
+        padding: 0;
         height: 100vh;
         gap: 10px;
         border-radius: 0; /* Full screen on mobile */
@@ -336,6 +336,7 @@ body {
         width: 100%;
         justify-content: space-between;
         padding: 0;
+		
     }
 
     #tetris {
@@ -357,14 +358,14 @@ body {
 
     .controls button {
         flex: 1;
-        max-width: 60px;
+        max-width: 50px;
         height: 45px;
         min-width: 45px; /* Ensure buttons are tappable on small screens */
     }
     
     #next-piece-canvas {
-        width: 60px;
-        height: 60px;
+        width: 55px;
+        height: 55px;
     }
     
     /* Make all text elements more readable on mobile */
@@ -384,7 +385,7 @@ body {
 /* Small screens adjustments */
 @media (max-height: 600px) {
     .game-container {
-        padding: 5px;
+        padding: 1px;
     }
 
     .game-info {
@@ -415,7 +416,8 @@ body {
     
     .game-info {
         flex-direction: column;
-        min-width: 80px;
+        min-width: 50px;
+       
     }
     
     #tetris {
