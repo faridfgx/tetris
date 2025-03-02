@@ -73,6 +73,8 @@ body {
     margin-top: 5px;
     width: 80px;
     height: 80px;
+	display: block;
+    
 }
 
 #score, #high-score, .combined-stats {
@@ -364,16 +366,21 @@ body {
     }
     
     #next-piece-canvas {
-        width: 55px;
-        height: 55px;
+        width: 60px;
+        height: 60px;
     }
     
     /* Make all text elements more readable on mobile */
     #score, #high-score, .combined-stats {
         font-size: 16px;
         padding: 8px;
+		text-align: center;
+		
     }
-    
+    #high-score{
+	font-weight: bold;
+	}
+	
     /* Adjust overlay screens for mobile */
     .overlay-screen {
         padding: 20px;
