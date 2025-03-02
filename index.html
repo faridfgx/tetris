@@ -8,8 +8,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.json">
-
+    
     <title>Tetris Web App</title>
     
     <link rel="stylesheet" href="styles.css">
@@ -40,10 +39,29 @@
 <body>
     <div class="game-container">
         <div class="game-info">
-            <div id="score">Score: 0</div>
-            <div id="high-score">High Score: 0</div>
-            <div id="level">Level: 1</div>
-            <div id="lines">Lines: 0</div>
+            <div class="stats-container">
+                <div id="score">Score: 0</div>
+                <div id="high-score">High Score: 0</div>
+                <div class="combined-stats">
+                    <span id="level">Level: 1</span>
+                    <span class="stats-divider">|</span>
+                    <span id="lines">Lines: 0</span>
+                </div>
+            </div>
+            <div class="control-toggles">
+                <div class="toggle-wrapper">
+                    <button id="sound-toggle" class="toggle-button" title="Toggle Sound">
+                        <span class="toggle-icon">🔊</span>
+                    </button>
+                    <span class="toggle-label">Sound</span>
+                </div>
+                <div class="toggle-wrapper">
+                    <button id="vibration-toggle" class="toggle-button" title="Toggle Vibration">
+                        <span class="toggle-icon">📳</span>
+                    </button>
+                    <span class="toggle-label">Vibration</span>
+                </div>
+            </div>
             <div id="next-piece">
                 <canvas id="next-piece-canvas" width="50" height="50"></canvas>
             </div>

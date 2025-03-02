@@ -16,6 +16,10 @@ const COLORS = [
 // High score variable - declared at global scope
 let highScore = 0;
 
+// Sound and vibration control variables
+let isSoundEnabled = true;
+let isVibrationEnabled = true;
+
 // Sound effects with actual sound files
 const AUDIO = {
     lineClear: new Audio('scoreline.wav'),
@@ -34,9 +38,15 @@ const AudioManager = {
                 audio.load();
             }
         });
+        
+        // Load sound preference from localStorage
+        this.loadSoundPreference();
     },
 
     play(soundName) {
+        // Only play sound if sound is enabled
+        if (!isSoundEnabled) return;
+        
         const audio = AUDIO[soundName];
         if (audio) {
             try {
@@ -47,6 +57,31 @@ const AudioManager = {
             } catch (e) {
                 console.warn(`Error playing ${soundName} sound:`, e);
             }
+        }
+    },
+    
+    toggleSound() {
+        isSoundEnabled = !isSoundEnabled;
+        this.saveSoundPreference();
+        return isSoundEnabled;
+    },
+    
+    loadSoundPreference() {
+        try {
+            const savedPref = localStorage.getItem('tetrisSoundEnabled');
+            if (savedPref !== null) {
+                isSoundEnabled = savedPref === 'true';
+            }
+        } catch (e) {
+            console.warn('Unable to load sound preference from local storage:', e);
+        }
+    },
+    
+    saveSoundPreference() {
+        try {
+            localStorage.setItem('tetrisSoundEnabled', isSoundEnabled.toString());
+        } catch (e) {
+            console.warn('Unable to save sound preference to local storage:', e);
         }
     }
 };
@@ -113,15 +148,62 @@ const HapticFeedback = {
     // Enable vibration by default
     enabled: true,
     
+    // Initialize and load preferences
+    init() {
+        this.loadVibrationPreference();
+        this.updateToggleButton();
+    },
+    
     // Vibrate with specified pattern
     vibrate(type) {
-        if (!this.enabled || !this.isSupported()) return;
+        if (!isVibrationEnabled || !this.isSupported()) return;
         
         try {
             const pattern = this.patterns[type] || this.patterns.move;
             navigator.vibrate(pattern);
         } catch (e) {
             console.warn('Vibration failed:', e);
+        }
+    },
+    
+    toggleVibration() {
+        isVibrationEnabled = !isVibrationEnabled;
+        this.saveVibrationPreference();
+        this.updateToggleButton();
+        return isVibrationEnabled;
+    },
+    
+    updateToggleButton() {
+        const toggleBtn = document.getElementById('vibration-toggle');
+        if (toggleBtn) {
+            if (isVibrationEnabled) {
+                toggleBtn.classList.add('active');
+                toggleBtn.classList.remove('inactive');
+                toggleBtn.querySelector('.toggle-icon').textContent = '📳';
+            } else {
+                toggleBtn.classList.add('inactive');
+                toggleBtn.classList.remove('active');
+                toggleBtn.querySelector('.toggle-icon').textContent = '📴';
+            }
+        }
+    },
+    
+    loadVibrationPreference() {
+        try {
+            const savedPref = localStorage.getItem('tetrisVibrationEnabled');
+            if (savedPref !== null) {
+                isVibrationEnabled = savedPref === 'true';
+            }
+        } catch (e) {
+            console.warn('Unable to load vibration preference from local storage:', e);
+        }
+    },
+    
+    saveVibrationPreference() {
+        try {
+            localStorage.setItem('tetrisVibrationEnabled', isVibrationEnabled.toString());
+        } catch (e) {
+            console.warn('Unable to save vibration preference to local storage:', e);
         }
     }
 };
@@ -805,7 +887,6 @@ function createRandomPiece() {
     // Create a deep copy of the piece to prevent shared reference
     return piece.map(row => [...row]);
 }
-
 function arenaSweep() {
     let rowCount = 0;
     let clearedRows = [];
@@ -889,6 +970,7 @@ function updateScore() {
     const levelElement = document.getElementById('level');
     const linesElement = document.getElementById('lines');
     const highScoreElement = document.getElementById('high-score');
+    const combinedStatsElement = document.querySelector('.combined-stats');
     
     if (scoreElement) scoreElement.innerText = `Score: ${player.score}`;
     if (levelElement) levelElement.innerText = `Level: ${level}`;
@@ -908,6 +990,14 @@ function updateScore() {
                 highScoreElement.classList.remove('highlight');
             }, 1000);
         }
+    }
+    
+    // Add highlight for combined stats when level or lines change
+    if (combinedStatsElement) {
+        combinedStatsElement.classList.add('highlight');
+        setTimeout(() => {
+            combinedStatsElement.classList.remove('highlight');
+        }, 1000);
     }
 }
 
@@ -980,6 +1070,49 @@ function startGame() {
         startScreen.classList.add('hidden');
     }
     resetGame();
+}
+
+// Add this function to initialize the toggle buttons
+function initToggleButtons() {
+    const soundToggle = document.getElementById('sound-toggle');
+    const vibrationToggle = document.getElementById('vibration-toggle');
+    
+    // Initialize sound toggle button state
+    if (soundToggle) {
+        if (isSoundEnabled) {
+            soundToggle.classList.add('active');
+            soundToggle.classList.remove('inactive');
+            soundToggle.querySelector('.toggle-icon').textContent = '🔊';
+        } else {
+            soundToggle.classList.add('inactive');
+            soundToggle.classList.remove('active');
+            soundToggle.querySelector('.toggle-icon').textContent = '🔇';
+        }
+        
+        // Add event listener
+        soundToggle.addEventListener('click', () => {
+            const isSoundOn = AudioManager.toggleSound();
+            if (isSoundOn) {
+                soundToggle.classList.add('active');
+                soundToggle.classList.remove('inactive');
+                soundToggle.querySelector('.toggle-icon').textContent = '🔊';
+            } else {
+                soundToggle.classList.add('inactive');
+                soundToggle.classList.remove('active');
+                soundToggle.querySelector('.toggle-icon').textContent = '🔇';
+            }
+        });
+    }
+    
+    // Initialize vibration toggle button state
+    if (vibrationToggle) {
+        // Initial state set in HapticFeedback.init()
+        
+        // Add event listener
+        vibrationToggle.addEventListener('click', () => {
+            HapticFeedback.toggleVibration();
+        });
+    }
 }
 
 function update(time = 0) {
@@ -1201,6 +1334,15 @@ function initGame() {
     
     // Load high score from local storage
     loadHighScore();
+    
+    // Initialize audio
+    AudioManager.init();
+    
+    // Initialize haptic feedback
+    HapticFeedback.init();
+    
+    // Initialize toggle buttons
+    initToggleButtons();
     
     // Initialize background manager
     backgroundManager = new BackgroundManager();
