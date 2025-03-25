@@ -12,9 +12,19 @@ const COLORS = [
     '#FFE138', // S
     '#3877FF'  // Z
 ];
+const GAME_MODES = {
+    SURVIVAL: 'survival',
+    REGULAR: 'regular'
+};
 
 // High score variable - declared at global scope
 let highScore = 0;
+// Current game mode (default to survival)
+let currentGameMode = GAME_MODES.SURVIVAL;
+
+// Game state variables that need to be accessible
+let dropSpeed = 1000; // Base drop speed in ms
+const MAX_LEVEL_REGULAR = 4; // Maximum level for Regular mode
 
 // Sound and vibration control variables
 let isSoundEnabled = true;
@@ -30,30 +40,56 @@ const AUDIO = {
 
 // Audio manager to handle sound effects safely
 const AudioManager = {
+    sounds: {},
+    
     init() {
-        Object.values(AUDIO).forEach(audio => {
-            if (audio) {
+        // Pre-create multiple instances of each sound to avoid delay
+        this.sounds = {
+            lineClear: [new Audio('scoreline.wav'), new Audio('scoreline.wav'), new Audio('scoreline.wav')],
+            move: [new Audio('rotate.wav'), new Audio('rotate.wav'), new Audio('rotate.wav')],
+            rotate: [new Audio('rotate.wav'), new Audio('rotate.wav'), new Audio('rotate.wav')],
+            gameOver: [new Audio('gameover.wav')]
+        };
+        
+        // Preload all sounds
+        Object.keys(this.sounds).forEach(soundName => {
+            this.sounds[soundName].forEach(audio => {
                 audio.volume = 0.3;
-                // Preload sounds
                 audio.load();
-            }
+            });
         });
         
         // Load sound preference from localStorage
         this.loadSoundPreference();
     },
-
+    
+    // Improved sound playback using sound pool
+    soundIndex: {
+        lineClear: 0,
+        move: 0,
+        rotate: 0,
+        gameOver: 0
+    },
+    
     play(soundName) {
         // Only play sound if sound is enabled
         if (!isSoundEnabled) return;
         
-        const audio = AUDIO[soundName];
-        if (audio) {
+        const soundPool = this.sounds[soundName];
+        if (soundPool && soundPool.length > 0) {
+            // Get the next available sound from the pool
+            const index = this.soundIndex[soundName] % soundPool.length;
+            const sound = soundPool[index];
+            
             try {
-                const sound = audio.cloneNode();
+                // Reset the sound to ensure it plays from the beginning
+                sound.currentTime = 0;
                 sound.play().catch(e => {
                     console.warn(`Failed to play ${soundName} sound:`, e);
                 });
+                
+                // Increment index for next time
+                this.soundIndex[soundName] = (this.soundIndex[soundName] + 1) % soundPool.length;
             } catch (e) {
                 console.warn(`Error playing ${soundName} sound:`, e);
             }
@@ -85,6 +121,8 @@ const AudioManager = {
         }
     }
 };
+
+
 
 // Initialize audio
 AudioManager.init();
@@ -207,7 +245,15 @@ const HapticFeedback = {
         }
     }
 };
-
+function calculateDropSpeed(currentLevel) {
+    if (currentGameMode === GAME_MODES.REGULAR && currentLevel > MAX_LEVEL_REGULAR) {
+        // Cap at level 4 speed for Regular mode
+        return 1000 / MAX_LEVEL_REGULAR;
+    } else {
+        // Normal progression for Survival mode
+        return 1000 / currentLevel;
+    }
+}
 // 2. DYNAMIC BACKGROUNDS
 // This class will handle background animations and effects
 class BackgroundManager {
@@ -970,9 +1016,10 @@ function updateScore() {
     const levelElement = document.getElementById('level');
     const linesElement = document.getElementById('lines');
     const highScoreElement = document.getElementById('high-score');
+    const topStatsElement = document.querySelector('.top-stats');
     const combinedStatsElement = document.querySelector('.combined-stats');
     
-    if (scoreElement) scoreElement.innerText = `Score: ${player.score}`;
+    if (scoreElement) scoreElement.innerText = player.score;
     if (levelElement) levelElement.innerText = `Level: ${level}`;
     if (linesElement) linesElement.innerText = `Lines: ${lines}`;
     
@@ -980,15 +1027,17 @@ function updateScore() {
     if (player.score > highScore) {
         highScore = player.score;
         if (highScoreElement) {
-            highScoreElement.innerText = `High Score: ${highScore}`;
+            highScoreElement.innerText = highScore;
             // Save high score to local storage
             saveHighScore();
             
-            // Add highlight animation
-            highScoreElement.classList.add('highlight');
-            setTimeout(() => {
-                highScoreElement.classList.remove('highlight');
-            }, 1000);
+            // Add highlight animation for top stats
+            if (topStatsElement) {
+                topStatsElement.classList.add('highlight');
+                setTimeout(() => {
+                    topStatsElement.classList.remove('highlight');
+                }, 1000);
+            }
         }
     }
     
@@ -1069,9 +1118,12 @@ function startGame() {
     if (startScreen) {
         startScreen.classList.add('hidden');
     }
+    
+    // Update game mode display when starting
+    updateGameModeDisplay();
+    
     resetGame();
 }
-
 // Add this function to initialize the toggle buttons
 function initToggleButtons() {
     const soundToggle = document.getElementById('sound-toggle');
@@ -1114,14 +1166,68 @@ function initToggleButtons() {
         });
     }
 }
+function initGameModeSelectors() {
+    const survivalModeBtn = document.getElementById('survival-mode-btn');
+    const regularModeBtn = document.getElementById('regular-mode-btn');
+    
+    // Load saved preference
+    loadGameModePreference();
+    
+    // Update initial selection based on current mode
+    updateModeSelectorUI();
+    
+    if (survivalModeBtn) {
+        survivalModeBtn.addEventListener('click', () => {
+            setGameMode(GAME_MODES.SURVIVAL);
+            updateModeSelectorUI();
+        });
+    }
+    
+    if (regularModeBtn) {
+        regularModeBtn.addEventListener('click', () => {
+            setGameMode(GAME_MODES.REGULAR);
+            updateModeSelectorUI();
+        });
+    }
+}
 
+function updateModeSelectorUI() {
+    const survivalModeBtn = document.getElementById('survival-mode-btn');
+    const regularModeBtn = document.getElementById('regular-mode-btn');
+    
+    if (survivalModeBtn && regularModeBtn) {
+        if (currentGameMode === GAME_MODES.SURVIVAL) {
+            survivalModeBtn.classList.add('selected');
+            regularModeBtn.classList.remove('selected');
+        } else {
+            survivalModeBtn.classList.remove('selected');
+            regularModeBtn.classList.add('selected');
+        }
+    }
+}
+
+function updateGameModeToggleUI(toggleButton) {
+    if (!toggleButton) return;
+    
+    if (currentGameMode === GAME_MODES.SURVIVAL) {
+        toggleButton.classList.add('active');
+        toggleButton.classList.remove('inactive');
+        toggleButton.querySelector('.toggle-icon').textContent = '🏆';
+    } else {
+        toggleButton.classList.add('inactive');
+        toggleButton.classList.remove('active');
+        toggleButton.querySelector('.toggle-icon').textContent = '🎮';
+    }
+}
 function update(time = 0) {
     if (!isGameOver && !isPaused && isGameStarted) {
         const deltaTime = time - lastTime;
         lastTime = time;
         
         dropCounter += deltaTime;
-        if (dropCounter > 1000 / level) {
+        
+        // Use drop speed based on game mode
+        if (dropCounter > calculateDropSpeed(level)) {
             playerDrop();
         }
         
@@ -1139,7 +1245,60 @@ function update(time = 0) {
     }
     requestAnimationFrame(update);
 }
+function setGameMode(mode) {
+    if (mode === GAME_MODES.SURVIVAL || mode === GAME_MODES.REGULAR) {
+        currentGameMode = mode;
+        
+        // Update UI to show current mode
+        updateGameModeDisplay();
+        
+        // Save preference
+        saveGameModePreference();
+    }
+    
+    return currentGameMode;
+}
+function toggleGameMode() {
+    if (currentGameMode === GAME_MODES.SURVIVAL) {
+        currentGameMode = GAME_MODES.REGULAR;
+    } else {
+        currentGameMode = GAME_MODES.SURVIVAL;
+    }
+    
+    // Update UI to show current mode
+    updateGameModeDisplay();
+    
+    // Save preference
+    saveGameModePreference();
+    
+    return currentGameMode;
+}
+// Function to update game mode display
+function updateGameModeDisplay() {
+    const gameModeElement = document.getElementById('game-mode');
+    if (gameModeElement) {
+        gameModeElement.innerText = currentGameMode === GAME_MODES.SURVIVAL ? 'Survival' : 'Regular';
+    }
+}
+// Functions to save/load game mode preference
+function saveGameModePreference() {
+    try {
+        localStorage.setItem('tetrisGameMode', currentGameMode);
+    } catch (e) {
+        console.warn('Unable to save game mode preference to local storage:', e);
+    }
+}
 
+function loadGameModePreference() {
+    try {
+        const savedMode = localStorage.getItem('tetrisGameMode');
+        if (savedMode && (savedMode === GAME_MODES.SURVIVAL || savedMode === GAME_MODES.REGULAR)) {
+            currentGameMode = savedMode;
+        }
+    } catch (e) {
+        console.warn('Unable to load game mode preference from local storage:', e);
+    }
+}
 function resizeCanvas() {
     if (!canvas) return;
     
@@ -1335,14 +1494,20 @@ function initGame() {
     // Load high score from local storage
     loadHighScore();
     
-    // Initialize audio
+    // Load game mode preference
+    loadGameModePreference();
+    
+    // Initialize audio with improved sound pool
     AudioManager.init();
     
     // Initialize haptic feedback
     HapticFeedback.init();
     
-    // Initialize toggle buttons
+    // Initialize toggle buttons for sound and vibration
     initToggleButtons();
+    
+    // Initialize game mode selectors
+    initGameModeSelectors();
     
     // Initialize background manager
     backgroundManager = new BackgroundManager();
@@ -1376,11 +1541,13 @@ function initGame() {
     // Set initial canvas size
     resizeCanvas();
     
+    // Update game mode display
+    updateGameModeDisplay();
+    
     // Start the game loop
     draw();
     update();
 }
-
 // Initialize the game when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     // Wait a short time to ensure all elements are loaded

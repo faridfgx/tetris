@@ -12,22 +12,30 @@
     <title>Tetris Web App</title>
     
     <link rel="stylesheet" href="styles.css">
-    <!-- Remove manifest reference for local testing -->
-    <!-- <link rel="manifest" href="manifest.json"> -->
+    <link rel="manifest" href="manifest.json">
     
     <!-- App Icons -->
     <link rel="icon" href="favicon.png">
-    <link rel="apple-touch-icon" href="favicon.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     <link rel="shortcut icon" href="favicon.png">
     
-    <!-- Inline the critical parts of the manifest for local testing -->
+    <!-- Apple PWA meta tags -->
+    <link rel="apple-touch-icon" sizes="72x72" href="icons/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="icons/icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128x128.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="384x384" href="icons/icon-384x384.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512x512.png">
+    
+    <!-- Service Worker Registration -->
     <script>
-        // Create a simple manifest-like object for offline capability
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
                     .then(registration => {
-                        console.log('ServiceWorker registration successful');
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
                     })
                     .catch(error => {
                         console.log('ServiceWorker registration failed: ', error);
@@ -40,8 +48,13 @@
     <div class="game-container">
         <div class="game-info">
             <div class="stats-container">
-                <div id="score">Score: 0</div>
-                <div id="high-score">High Score: 0</div>
+                <div class="top-stats">
+                    <span id="game-mode">Survival</span>
+                    <span class="stats-divider">|</span>
+                    <span id="high-score">0</span>
+                    <span class="stats-divider">|</span>
+                    <span id="score">0</span>
+                </div>
                 <div class="combined-stats">
                     <span id="level">Level: 1</span>
                     <span class="stats-divider">|</span>
@@ -60,17 +73,16 @@
                         <span class="toggle-icon">📳</span>
                     </button>
                     <span class="toggle-label">Vibration</span>
-					            <div id="next-piece">
-                <canvas id="next-piece-canvas" width="50" height="50"></canvas>
-            </div>
-					
                 </div>
             </div>
-
+            <div id="next-piece">
+                <canvas id="next-piece-canvas" width="50" height="50"></canvas>
+            </div>
         </div>
+        
         <div class="game-area">
             <canvas id="tetris" width="300" height="600"></canvas>
-           
+            
             <div class="controls">
                 <button id="rotate">↻</button>
                 <button id="pause">⏸</button>
@@ -80,11 +92,31 @@
                 <button id="move-right">→</button>
             </div>
         </div>
+        
+        <button id="install-button" class="install-button hidden">Install App</button>
+        
         <div id="start-screen" class="overlay-screen">
             <h2>TETRIS</h2>
+            <div class="mode-selection">
+                <h3>Select Mode:</h3>
+                <div class="mode-buttons">
+                    <button id="survival-mode-btn" class="mode-btn selected">
+                        <span class="mode-icon">🏆</span>
+                        <span class="mode-name">Survival</span>
+                        <span class="mode-desc">Speed increases with each level</span>
+                    </button>
+                    <button id="regular-mode-btn" class="mode-btn">
+                        <span class="mode-icon">🎮</span>
+                        <span class="mode-name">Regular</span>
+                        <span class="mode-desc">Speed caps at level 4</span>
+                    </button>
+                </div>
+            </div>
             <button id="start-button">Start Game</button>
         </div>
+        
         <div id="pause-screen" class="overlay-screen hidden">PAUSED</div>
+        
         <div id="game-over-screen" class="overlay-screen hidden">
             <h2>GAME OVER</h2>
             <p>Final Score: <span id="final-score">0</span></p>
@@ -95,37 +127,6 @@
     </div>
     
     <script src="tetris.js"></script>
-    
-    <!-- Simple service worker for local testing -->
-    <script>
-        // Create a simple service worker file if it doesn't exist
-        const swContent = `
-            self.addEventListener('install', function(event) {
-                self.skipWaiting();
-            });
-            
-            self.addEventListener('fetch', function(event) {
-                event.respondWith(fetch(event.request));
-            });
-        `;
-        
-        // Check if we can write to the filesystem (this will only work in certain contexts)
-        if (window.File && window.FileReader && window.FileList && window.Blob) {
-            try {
-                // This is a fallback and may not work in all browsers
-                const file = new Blob([swContent], {type: 'application/javascript'});
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(file);
-                a.download = 'sw.js';
-                a.style.display = 'none';
-                document.body.appendChild(a);
-                // Uncomment this line to actually download the file
-                // a.click();
-                document.body.removeChild(a);
-            } catch (e) {
-                console.log('Could not create service worker file');
-            }
-        }
-    </script>
+    <script src="pwa-install.js"></script>
 </body>
 </html>
